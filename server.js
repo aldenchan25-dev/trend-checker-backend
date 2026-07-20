@@ -21,16 +21,17 @@ app.get('/product-title', async (req, res) => {
   }
 
   try {
-    // Pretend to be a normal browser more convincingly, since AliExpress blocks obvious bots
-    const pageResponse = await axios.get(link, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Referer': 'https://www.google.com/'
-      },
-      maxRedirects: 10,
-      timeout: 15000
+    const apiKey = process.env.SCRAPERAPI_KEY;
+
+    if (!apiKey) {
+      return res.status(500).json({ error: 'Missing ScraperAPI key on the server' });
+    }
+
+    // Ask ScraperAPI to fetch the page for us, instead of asking AliExpress directly
+    const scraperUrl = 'https://api.scraperapi.com?api_key=' + apiKey + '&url=' + encodeURIComponent(link);
+
+    const pageResponse = await axios.get(scraperUrl, {
+      timeout: 30000
     });
 
     const $ = cheerio.load(pageResponse.data);
