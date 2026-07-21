@@ -27,8 +27,8 @@ app.get('/product-title', async (req, res) => {
       return res.status(500).json({ error: 'Missing ScraperAPI key on the server' });
     }
 
-    // Ask ScraperAPI to fetch the page for us, instead of asking AliExpress directly
-    const scraperUrl = 'https://api.scraperapi.com?api_key=' + apiKey + '&url=' + encodeURIComponent(link);
+    // Ask ScraperAPI to fetch the page for us, routed through the US so it comes back in English
+    const scraperUrl = 'https://api.scraperapi.com?api_key=' + apiKey + '&country_code=us&url=' + encodeURIComponent(link);
 
     const pageResponse = await axios.get(scraperUrl, {
       timeout: 30000
